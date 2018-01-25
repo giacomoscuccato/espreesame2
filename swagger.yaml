@@ -1,0 +1,127 @@
+swagger: "2.0"
+info:
+  version: 1.0.0
+  title: "Espreesame"
+  description: Descrizione dell'api
+  termsOfService: http://swagger.io/terms/
+  contact:
+    name: Swagger API Team
+    email: foo@example.com
+    url: http://madskristensen.net
+  license:
+    name: MIT
+    url: http://github.com/gruntjs/grunt/blob/master/LICENSE-MIT
+host: nomeapp.herokuapp.com
+basePath: /api
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /astronaut:
+    get:
+      description: |
+        Get all astronaut + search by lastName.
+      operationId: getallastronaut
+      parameters:
+        - name: lastName
+          in: query
+          description: lastName of astronauts to get
+          required: false
+          type: string      
+      responses:
+        200:
+          description: ritorna tutti gli elementi astronaut
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/astronaut'
+        404:
+          description: not found
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      description: Crea un nuovo astronaut.  Duplicates are allowed
+      operationId: addastronaut
+      parameters:
+        - name: astronaut
+          in: body
+          description: astronaut da aggiungere all'array
+          required: true
+          schema:
+            $ref: '#/definitions/Newastronaut'
+      responses:
+        200:
+          description: astronaut response
+          schema:
+            $ref: '#/definitions/astronaut'
+        404:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /astronaut/{id}:
+    get:
+      description: ritorna astronaut con quel ID
+      operationId: getastronautID
+      parameters:
+        - name: id
+          in: path
+          description: ID of astronaut to fetch
+          required: true
+          type: string
+      responses:
+        200:
+          description: astronaut response
+          schema:
+            $ref: '#/definitions/astronaut'
+        404:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      description: put a single astronaut based on the ID supplied
+      operationId: putastronaut
+      parameters:
+        - name: id
+          in: path
+          description: ID of astronaut to modify
+          required: true
+          type: string
+      responses:
+        200:
+          description: astronaut modified
+        404:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  astronaut:
+    allOf:
+      - $ref: '#/definitions/Newastronaut'
+      - properties:
+          id:
+            type: string
+  Newastronaut:
+    required:
+      - firstName
+      - lastName
+      - isInSpace
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      isInspace:
+        type: boolean
+  Error:
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
